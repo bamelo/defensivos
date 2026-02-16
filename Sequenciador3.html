@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Assistente de Mistura - Bruno Adelino</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f4f1; padding: 15px; color: #333; }
+        .container { max-width: 600px; margin: auto; background: white; padding: 20px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
+        h2 { color: #1b5e20; text-align: center; margin-bottom: 5px; font-size: 1.4rem; }
+        .subtitle { text-align: center; font-size: 0.9rem; color: #666; margin-bottom: 20px; }
+        .input-group { background: #f9f9f9; padding: 12px; border-radius: 12px; margin-bottom: 10px; border-left: 5px solid #2e7d32; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; font-size: 0.85rem; }
+        input { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #ddd; font-size: 1rem; box-sizing: border-box; }
+        .btn-add { background-color: #f1f8e9; color: #2e7d32; border: 2px dashed #2e7d32; cursor: pointer; padding: 12px; width: 100%; font-weight: bold; border-radius: 8px; margin-top: 5px; }
+        .btn-calc { background-color: #1b5e20; color: white; border: none; padding: 18px; width: 100%; font-size: 1.1rem; font-weight: bold; border-radius: 8px; margin-top: 15px; cursor: pointer; }
+        #resultado { margin-top: 25px; padding: 20px; border-radius: 12px; display: none; background-color: #ffffff; border: 2px solid #2e7d32; }
+        .step { margin-bottom: 15px; padding-left: 35px; position: relative; font-size: 0.95rem; }
+        .step-num { position: absolute; left: 0; top: 0; font-weight: bold; color: white; background: #2e7d32; width: 24px; height: 24px; border-radius: 50%; text-align: center; line-height: 24px; }
+        .warning { color: #d32f2f; font-size: 0.8rem; display: block; margin-top: 4px; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Ordem de Mistura</h2>
+    <p class="subtitle">Agrônomo Bruno Adelino - Assistente Técnico</p>
+    
+    <div id="inputs-container">
+        <div class="input-group">
+            <label>Busque o Produto:</label>
+            <input type="text" class="prod-nome" list="produtos-lista" placeholder="Digite o nome do defensivo..." onchange="detectarFormulacao(this)">
+            <input type="hidden" class="prod-tipo">
+        </div>
+    </div>
+
+    <button class="btn-add" onclick="adicionarCampo()">+ Adicionar Produto</button>
+    <button class="btn-calc" onclick="gerarOrdem()">VER SEQUÊNCIA NO TANQUE</button>
+
+    <div id="resultado">
+        <h3 style="text-align: center; color: #1b5e20; margin-top: 0;">📋 Roteiro de Adição</h3>
+        <div id="lista-passos"></div>
+    </div>
+</div>
+
+<datalist id="produtos-lista">
+    <option value="Altacor (WG)"> <option value="Belt (WG)"> <option value="Sperto (WG)"> <option value="Aliette (WG)"> <option value="Previcur N (WG)"> <option value="Zapp Qi (WG)"> <option value="Heat (WG)"> <option value="Spider (WG)"> <option value="Classic (WG)"> <option value="Ally (WG)"> <option value="Aurora (WG)"> <option value="Mospilan WG (WG)"> <option value="Exalt (WG)"> <option value="Coragen (WG)"> <option value="Aproach Prima (WG)"> <option value="Nativo (WG)"> <option value="Opera Ultra (WG)"> <option value="Tebuzim (WG)"> <option value="Fusilade (WG)"> <option value="Basagran (WG)"> <option value="Gesaprim WG (WG)"> <option value="Sencor (WG)"> <option value="Flumizin (WG)"> <option value="Gramocil (WG)"> <option value="Amistar WG (WG)"> <option value="Infinito (WG)"> <option value="Revus (WG)"> <option value="Kocide (WG)"> <option value="Cobox (WG)"> <option value="Difere (WG)"> <option value="Recop (WG)"> <option value="Supera (WG)"> <option value="Manzate WG (WG)"> <option value="Penncozeb (WG)"> <option value="Unizeb Gold (WG)"> <option value="Triziman (WG)"> <option value="Viper (WG)"> <option value="Boral WG (WG)"> <option value="Sumyzin (WG)"> <option value="Goal (WG)">
+    <option value="Priori Xtra (SC)"> <option value="Fox Xpro (SC)"> <option value="Engeo Pleno S (SC)"> <option value="Connect (SC)"> <option value="Aprovia (SC)"> <option value="Elatus (SC)"> <option value="Viovan (SC)"> <option value="Orchestra (SC)"> <option value="Cronnos (SC)"> <option value="Atemi (SC)"> <option value="Abacus HC (SC)"> <option value="Bravonil 720 (SC)"> <option value="Chlorothalonil Nortox (SC)"> <option value="Atrazina Nortox (SC)"> <option value="Sipcam Atrazina (SC)"> <option value="Priori Top (SC)"> <option value="Miravis Duo (SC)"> <option value="Azimut (SC)"> <option value="Horus (SC)"> <option value="Lancer (SC)"> <option value="Fielder (SC)"> <option value="Privilege (SC)"> <option value="Benevia (SC)"> <option value="Verimark (SC)"> <option value="Diplomat (SC)"> <option value="K-Othrine SC (SC)"> <option value="Talisman (SC)"> <option value="Talstar (SC)"> <option value="Brigadier (SC)"> <option value="Hero (SC)"> <option value="Evidence 700 (SC)"> <option value="Confidor (SC)"> <option value="Imidacloprid Nortox (SC)"> <option value="Thiamethoxam Adama (SC)"> <option value="Certero (SC)"> <option value="Nominee (SC)"> <option value="Accent (SC)"> <option value="Callisto (SC)"> <option value="Mesotrione Syngenta (SC)"> <option value="Sansoon (SC)">
+    <option value="Roundup Original (SL)"> <option value="Cruiser (SL)"> <option value="2,4-D Aminol (SL)"> <option value="Artic (SL)"> <option value="Finale (SL)"> <option value="Reglone (SL)"> <option value="Diquat (SL)"> <option value="Fluron (SL)"> <option value="Rimon (SL)"> <option value="Intrepid (SL)"> <option value="Match (SL)"> <option value="Tracer (SL)"> <option value="Success (SL)"> <option value="Spinosad (SL)"> <option value="Dimethoate (SL)"> <option value="Perfekthion (SL)"> <option value="Tebufenozide (SL)"> <option value="Bifenthrin SL (SL)"> <option value="Regent 800 (SL)"> <option value="Standak (SL)"> <option value="Poncho (SL)"> <option value="Gaucho (SL)"> <option value="K-Othrine 2-P (SL)"> <option value="Tigre (SL)"> <option value="Daimon (SL)"> <option value="Nominee SL (SL)"> <option value="Basagran 480 (SL)"> <option value="Flex (SL)"> <option value="Fomesafen Syngenta (SL)"> <option value="Bentazon Basf (SL)"> <option value="Pivot (SL)"> <option value="Imazethapyr Nortox (SL)"> <option value="Cadre (SL)"> <option value="Imazapic (SL)"> <option value="Arsenal (SL)"> <option value="Chopper (SL)"> <option value="Contain (SL)"> <option value="Clearfield (SL)"> <option value="DMA 806 (SL)"> <option value="Fascinate (SL)">
+    <option value="Select (EC)"> <option value="Verdict (EC)"> <option value="Poast (EC)"> <option value="Score (EC)"> <option value="Abamectin (EC)"> <option value="Dual Gold (EC)"> <option value="Roundup Ultra (EC)"> <option value="Panther (EC)"> <option value="Galant (EC)"> <option value="Fusiflex (EC)"> <option value="Targa-D (EC)"> <option value="Premerlin (EC)"> <option value="Herbadox (EC)"> <option value="Clincher (EC)"> <option value="Ametrina (EC)"> <option value="Gesapax (EC)"> <option value="Scepter (EC)"> <option value="Assert (EC)"> <option value="Topik (EC)"> <option value="Tordon (EC)"> <option value="Jaguar (EC)"> <option value="Garlon (EC)"> <option value="Cruiser EC (EC)"> <option value="Dursban (EC)"> <option value="Lorsban (EC)"> <option value="Lannate BR (EC)"> <option value="Methomyl (EC)"> <option value="Marshall (EC)"> <option value="Pyrinex (EC)"> <option value="Fastac (EC)"> <option value="Decis (EC)"> <option value="Karate Zeon (EC)"> <option value="Bulldock (EC)"> <option value="Folisuper (EC)"> <option value="Sumithion (EC)"> <option value="Malathion Nortox (EC)"> <option value="Ethion (EC)"> <option value="Chlorpyrifos (EC)"> <option value="Cypermetrin (EC)"> <option value="Permetrin (EC)">
+    <option value="Serenade (Biológico)"> <option value="Boveril WP (Biológico)"> <option value="Metarril WP (Biológico)"> <option value="Rizotec (Biológico)"> <option value="Quality (Biológico)"> <option value="Ballence (Biológico)"> <option value="Quartzo (Biológico)"> <option value="Votivo Prime (Biológico)"> <option value="Potenzia (Biológico)"> <option value="Hayate (Biológico)"> <option value="Eco-Shot (Biológico)"> <option value="NemaControl (Biológico)"> <option value="Trichodermil (Biológico)"> <option value="AgroEfect (Biológico)"> <option value="Metatrich (Biológico)"> <option value="Bac Control (Biológico)"> <option value="Dipel (Biológico)"> <option value="Thuricide (Biológico)"> <option value="Agree (Biológico)"> <option value="Bovermax (Biológico)"> <option value="Octane (Biológico)"> <option value="Cartucho Vit (Biológico)"> <option value="Chrysoperla (Biológico)"> <option value="StimuControl (Biológico)"> <option value="Trianum (Biológico)"> <option value="Onix (Biológico)"> <option value="Penergetic (Biológico)"> <option value="Inlay (Biológico)"> <option value="Challenger (Biológico)"> <option value="Simbiose Maíz (Biológico)"> <option value="Masterfix (Biológico)"> <option value="Biomax (Biológico)"> <option value="Nitrogeo (Biológico)"> <option value="Grisu (Biológico)"> <option value="Metavass (Biológico)"> <option value="Lalguard M52 (Biológico)"> <option value="Vegalux (Biológico)"> <option value="Bio-Imune (Biológico)"> <option value="Acera (Biológico)"> <option value="BoveMax (Biológico)">
+    <option value="Redutor de pH (Condicionador)"> <option value="Antiespumante (Condicionador)"> <option value="Óleo Mineral (Adjuvante)"> <option value="Óleo Vegetal (Adjuvante)"> <option value="Espalhante Adesivo (Adjuvante)">
+</datalist>
+
+<script>
+    const mapeamento = {
+        "(Condicionador)": 1, "(WG)": 2, "(WP)": 2, "(SC)": 3, "(CS)": 3, "(AS)": 3,
+        "(SL)": 4, "(Biológico)": 5, "(EC)": 6, "(Adjuvante)": 7
+    };
+
+    function adicionarCampo() {
+        const container = document.getElementById('inputs-container');
+        const div = document.createElement('div');
+        div.className = 'input-group';
+        div.innerHTML = `<label>Produto:</label><input type="text" class="prod-nome" list="produtos-lista" placeholder="Próximo produto..." onchange="detectarFormulacao(this)"><input type="hidden" class="prod-tipo">`;
+        container.appendChild(div);
+    }
+
+    function detectarFormulacao(input) {
+        const hidden = input.nextElementSibling;
+        hidden.value = "";
+        for (let chave in mapeamento) {
+            if (input.value.includes(chave)) { hidden.value = mapeamento[chave]; break; }
+        }
+    }
+
+    function gerarOrdem() {
+        const inputs = document.querySelectorAll('.input-group');
+        let listaParaOrdem = [];
+        inputs.forEach(g => {
+            const n = g.querySelector('.prod-nome').value;
+            const t = parseInt(g.querySelector('.prod-tipo').value);
+            if (n && t) listaParaOrdem.push({ n, t });
+        });
+
+        if (listaParaOrdem.length === 0) { alert("Selecione os produtos da lista!"); return; }
+
+        listaParaOrdem.sort((a, b) => a.t - b.t);
+
+        let html = `<div class="step"><span class="step-num">0</span> <b>Água:</b> Encher 75% do tanque e ligar <b>agitação</b>.</div>`;
+        listaParaOrdem.forEach((item, i) => {
+            let obs = item.t === 5 ? `<span class="warning">⚠️ Adicionar biológico após químicos de base água. Evite pH extremo.</span>` : "";
+            html += `<div class="step"><span class="step-num">${i+1}</span> <b>${item.n}</b>${obs}</div>`;
+        });
+        html += `<div class="step"><span class="step-num">${listaParaOrdem.length+1}</span> <b>Completar:</b> Encher o restante e manter agitador ligado.</div>`;
+
+        document.getElementById('lista-passos').innerHTML = html;
+        document.getElementById('resultado').style.display = 'block';
+        document.getElementById('resultado').scrollIntoView({ behavior: 'smooth' });
+    }
+</script>
+</body>
+</html>
